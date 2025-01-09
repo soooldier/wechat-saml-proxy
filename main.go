@@ -20,7 +20,8 @@ var (
 	appid    = "wxbb7b02e8aaffb2e4"
 
 	callback4cas = "https://idaas-saas-idp.eco.teems.com.cn/cidp/login/ai-b41f38383fcb411fb5f0ff0ec3166152"
-	fakeuser     = ""
+	fakeuser     = "yitttang"
+	fakeopenid   = "oNEbn6637Lh18k3ZAN7mkRGq-U2U"
 )
 
 func main() {
@@ -68,7 +69,7 @@ func main() {
 			memory.Delete(ticket)
 		}()
 		openid4string := string(openid)
-		if openid4string == "oNEbn6637Lh18k3ZAN7mkRGq-U2U" {
+		if openid4string == fakeopenid {
 			openid4string = fakeuser
 		} else {
 			openid4string = "unknown"
@@ -89,6 +90,11 @@ func main() {
 		fakeuser = r.URL.Query().Get("name")
 		if len(fakeuser) == 0 {
 			fmt.Fprint(w, "请通过name传递模拟账号用户名")
+			return
+		}
+		fakeopenid = r.URL.Query().Get("openid")
+		if len(fakeopenid) == 0 {
+			fmt.Fprint(w, "请通过openid传递模拟账号openid")
 			return
 		}
 		fmt.Fprint(w, "ok")
