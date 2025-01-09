@@ -2,13 +2,14 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/cache"
 	"github.com/silenceper/wechat/v2/officialaccount/config"
 	"github.com/silenceper/wechat/v2/officialaccount/oauth"
+	"wechat-saml-proxy/xsession"
 )
 
 var (
@@ -18,22 +19,22 @@ var (
 )
 
 // LoginHandler 微信登录
-func LoginHandler(c *gin.Context) {
-	code := c.Query("code")
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
 	user, err := getWechatOfficialNickname(appId, appSecret, token, code, cache.NewMemory())
 	if err != nil {
-		c.HTML(500, err.Error(), nil)
-		c.Abort()
+		fmt.Fprint(w, "内部错误")
+		return
 	}
 	user4json, err := json.Marshal(user)
 	if err != nil {
-		c.HTML(500, err.Error(), nil)
-		c.Abort()
+		fmt.Fprint(w, "内部错误")
+		return
 	}
-	session := sessions.Default(c)
-	session.Set("openid4wechat", user.OpenID)
-	session.Save()
-	c.HTML(200, string(user4json), nil)
+	session, _ := xsession.Store.Get(r, "user")
+	session.Values["openid4wechat"] = user.OpenID
+	session.Save(r, w)
+	fmt.Fprint(w, string(user4json))
 }
 
 func getWechatOfficialNickname(appId, appSecret, token, code string, cache cache.Cache) (userinfo oauth.UserInfo, err error) {

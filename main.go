@@ -1,34 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
+	"log"
+	"net/http"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-gonic/gin"
 	"wechat-saml-proxy/service"
+	"wechat-saml-proxy/xsession"
 )
 
 func main() {
-	r := gin.Default()
-	store := memstore.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
-	r.GET("/", func(c *gin.Context) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadFile("./index.html")
 		if err != nil {
-			c.HTML(500, "Internal Error", nil)
-			c.Abort()
+			fmt.Fprint(w, "内部错误")
+			return
 		}
-		c.HTML(200, string(b), nil)
+		fmt.Fprint(w, string(b))
 	})
-	r.GET("/MP_verify_32iWga2EVle6QTQm.txt", func(c *gin.Context) {
-		c.HTML(200, string("32iWga2EVle6QTQm"), nil)
+	http.HandleFunc("/MP_verify_32iWga2EVle6QTQm.txt", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "32iWga2EVle6QTQm")
 	})
-	r.GET("/api/callback", service.LoginHandler)
-	r.GET("/api/saml", func(c *gin.Context) {
-		openid4interface := sessions.Default(c).Get("openid4wechat")
-		openid4string := openid4interface.(string)
-		c.HTML(200, openid4string, nil)
+	http.HandleFunc("/api/callback", service.LoginHandler)
+	http.HandleFunc("/api/saml", func(w http.ResponseWriter, r *http.Request) {
+		session, _ := xsession.Store.Get(r, "user")
+		fmt.Fprintf(w, "name is :%s", session.Values["openid4wechat"])
 	})
-	r.Run(":80")
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
