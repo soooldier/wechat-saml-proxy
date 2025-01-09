@@ -41,24 +41,47 @@ func main() {
 		fmt.Fprintf(w, "name is :%s", session.Values["openid4wechat"])
 	})
 	http.HandleFunc("/cas/login", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, r.URL.Query())
-		return
 		session, _ := xsession.Store.Get(r, "user")
 		if _, ok := session.Values["openid"]; !ok {
 			session.Values["redirect"] = "https://wechat-saml-proxy-v1-133482-9-1333979547.sh.run.tcloudbase." +
-				"com/cas/login"
+				"com/cas/login?service=" + r.URL.Query().Get("service")
 			w.Header().Set("Location", fmt.Sprintf("https://open.weixin.qq."+
 				"com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo"+
 				"#wechat_redirect", appid, url.QueryEscape(callback)))
 			w.WriteHeader(301)
 			return
 		}
+		parsed, _ := url.Parse(r.URL.Query().Get("service"))
 		ticket := uuid.NewString()
 		memory.Set(ticket, session.Values["openid"].([]byte))
-		w.Header().Set("Location", fmt.Sprintf("%s?ticket=%s&state=%s", callback4cas, ticket))
+		w.Header().Set("Location", fmt.Sprintf("%s?ticket=%s&state=%s", callback4cas, ticket, parsed.Query().Get("state")))
 		w.WriteHeader(301)
 		return
 
+	})
+	http.HandleFunc("/cas/check", func(w http.ResponseWriter, r *http.Request) {
+		ticket := r.URL.Query().Get("ticket")
+		openid, _ := memory.Get(ticket)
+		defer func() {
+			memory.Delete(ticket)
+		}()
+		openid4string := string(openid)
+		if openid4string == "oNEbn6637Lh18k3ZAN7mkRGq-U2U" {
+			openid4string = "yitttang"
+		} else {
+			openid4string = "unknown"
+		}
+		xml := "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">\n   <cas:authenticationSuccess>\n " +
+			"  <cas:user>" + openid4string + "</cas:user>\n   " +
+			"  <cas:attributes>\n   " +
+			"  <cas:user>" + openid4string + "</cas:user>\n   " +
+			"  <cas:userSourceId>" + openid4string + "</cas:userSourceId>\n  " +
+			"  <cas:mail>" + openid4string + "@ctgne.com</cas:mail>\n" +
+			"  <cas:userId>" + openid4string + "</cas:userId>\n" +
+			"  </cas:attributes>\n " +
+			"  <cas:proxyGrantingTicket>PGTIOU-84678-8a9d...</cas:proxyGrantingTicket>\n " +
+			"  </cas:authenticationSuccess>\n </cas:serviceResponse>"
+		fmt.Fprint(w, xml)
 	})
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
