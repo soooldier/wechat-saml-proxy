@@ -53,7 +53,7 @@ func main() {
 		}
 		parsed, _ := url.Parse(r.URL.Query().Get("service"))
 		ticket := uuid.NewString()
-		memory.Set(ticket, session.Values["openid"].([]byte))
+		memory.Set(ticket, []byte(session.Values["openid"].(string)))
 		w.Header().Set("Location", fmt.Sprintf("%s?ticket=%s&state=%s", callback4cas, ticket, parsed.Query().Get("state")))
 		w.WriteHeader(301)
 		return
