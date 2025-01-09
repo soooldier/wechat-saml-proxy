@@ -46,6 +46,7 @@ func main() {
 		if _, ok := session.Values["openid"]; !ok {
 			session.Values["redirect"] = "https://wechat-saml-proxy-v1-133482-9-1333979547.sh.run.tcloudbase." +
 				"com/cas/login?service=" + r.URL.Query().Get("service")
+			session.Save(r, w)
 			w.Header().Set("Location", fmt.Sprintf("https://open.weixin.qq."+
 				"com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo"+
 				"#wechat_redirect", appid, url.QueryEscape(callback)))
