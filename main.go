@@ -20,6 +20,7 @@ var (
 	appid    = "wxbb7b02e8aaffb2e4"
 
 	callback4cas = "https://idaas-saas-idp.eco.teems.com.cn/cidp/login/ai-b41f38383fcb411fb5f0ff0ec3166152"
+	fakeuser     = ""
 )
 
 func main() {
@@ -67,7 +68,7 @@ func main() {
 		}()
 		openid4string := string(openid)
 		if openid4string == "oNEbn6637Lh18k3ZAN7mkRGq-U2U" {
-			openid4string = "yitttang"
+			openid4string = fakeuser
 		} else {
 			openid4string = "unknown"
 		}
@@ -82,6 +83,14 @@ func main() {
 			"  <cas:proxyGrantingTicket>PGTIOU-84678-8a9d...</cas:proxyGrantingTicket>\n " +
 			"  </cas:authenticationSuccess>\n </cas:serviceResponse>"
 		fmt.Fprint(w, xml)
+	})
+	http.HandleFunc("/fake/user", func(w http.ResponseWriter, r *http.Request) {
+		fakeuser = r.URL.Query().Get("name")
+		if len(fakeuser) == 0 {
+			fmt.Fprint(w, "请通过name传递模拟账号用户名")
+			return
+		}
+		fmt.Fprint(w, "ok")
 	})
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
