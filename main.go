@@ -75,8 +75,8 @@ func main() {
 			"  <cas:user>" + openid4string + "</cas:user>\n   " +
 			"  <cas:attributes>\n   " +
 			"  <cas:user>" + openid4string + "</cas:user>\n   " +
-			"  <cas:userSourceId>" + openid4string + "</cas:userSourceId>\n  " +
-			"  <cas:mail>" + openid4string + "@ctgne.com</cas:mail>\n" +
+			"  <cas:userSourceId></cas:userSourceId>\n  " +
+			"  <cas:mail></cas:mail>\n" +
 			"  <cas:userId>" + openid4string + "</cas:userId>\n" +
 			"  </cas:attributes>\n " +
 			"  <cas:proxyGrantingTicket>PGTIOU-84678-8a9d...</cas:proxyGrantingTicket>\n " +
