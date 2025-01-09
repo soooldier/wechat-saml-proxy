@@ -19,7 +19,7 @@ var (
 	callback = "https://wechat-saml-proxy-v1-133482-9-1333979547.sh.run.tcloudbase.com/api/callback"
 	appid    = "wxbb7b02e8aaffb2e4"
 
-	callback4cas = ""
+	callback4cas = "https://idaas-saas-idp.eco.teems.com.cn/cidp/login/ai-b41f38383fcb411fb5f0ff0ec3166152"
 )
 
 func main() {
