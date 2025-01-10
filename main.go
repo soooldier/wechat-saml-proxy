@@ -37,6 +37,12 @@ func main() {
 	http.HandleFunc("/MP_verify_32iWga2EVle6QTQm.txt", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "32iWga2EVle6QTQm")
 	})
+	http.HandleFunc("/Cmc9dbMeWY.txt", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "8f8803127815d7155df916cacfcaa747")
+	})
+	http.HandleFunc("/F3zUTYqMMi.txt", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "44ae53897a43b86e1e83d6aaae33addd")
+	})
 	http.HandleFunc("/api/callback", service.LoginHandler)
 	http.HandleFunc("/api/saml", func(w http.ResponseWriter, r *http.Request) {
 		session, _ := xsession.Store.Get(r, "user")
