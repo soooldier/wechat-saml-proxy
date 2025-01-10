@@ -74,6 +74,8 @@ func main() {
 		openid4string := string(openid)
 		if openid4string == fakeopenid {
 			openid4string = fakeuser
+		} else if openid4string == "oNEbn66zZ2_NGshhtrm8R0EcEBxw" {
+			openid4string = "limye"
 		} else {
 			openid4string = "unknown"
 		}
