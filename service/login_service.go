@@ -34,9 +34,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := xsession.Store.Get(r, "user")
 	session.Values["openid"] = user.OpenID
 	session.Save(r, w)
-	
-	fmt.Fprint(w, string(user4json))
-	return
 	if _, ok := session.Values["redirect"]; ok {
 		w.Header().Set("Location", session.Values["redirect"].(string))
 		w.WriteHeader(301)
